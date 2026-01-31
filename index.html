@@ -2,252 +2,249 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Renovaciones</title>
+
 <style>
-* {
-  box-sizing: border-box;
-  font-family: system-ui, sans-serif;
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --accent:#22c55e;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
 }
 
-body {
-  margin: 0;
-  background: radial-gradient(circle at top, #0b132b, #020617);
-  color: #fff;
-  padding: 30px;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:radial-gradient(circle at top,#020617,#000);
+  color:var(--text);
+  padding:16px;
 }
 
-h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.container{
+  max-width:480px;
+  margin:auto;
 }
 
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin: 20px 0;
+.card{
+  background:linear-gradient(145deg,#020617,#0f172a);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
-.tabs button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  background: #0f172a;
-  color: #fff;
+h1{
+  font-size:20px;
+  margin:0 0 6px;
 }
 
-.tabs button.active {
-  background: #22c55e;
-  color: #000;
-  font-weight: bold;
+small{color:var(--muted)}
+
+input,select,button{
+  width:100%;
+  padding:12px;
+  margin-top:8px;
+  border-radius:12px;
+  border:none;
+  background:#020617;
+  color:var(--text);
+  font-size:14px;
 }
 
-.section {
-  margin-bottom: 30px;
+button{
+  cursor:pointer;
+  font-weight:600;
 }
 
-.client-card {
-  background: linear-gradient(180deg, #0f172a, #020617);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: 0 0 30px rgba(0,0,0,.5);
+button.primary{
+  background:var(--accent);
+  color:#022c22;
 }
 
-.client-info strong {
-  font-size: 16px;
+.tabs{
+  display:flex;
+  gap:8px;
 }
 
-.client-info div {
-  font-size: 14px;
-  opacity: .85;
+.tabs button{
+  flex:1;
+  background:#020617;
+  border:1px solid #1f2937;
 }
 
-.client-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  flex-wrap: wrap;
+.tabs button.active{
+  background:var(--accent);
+  color:#022c22;
 }
 
-.client-actions button {
-  border: none;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 14px;
+.client{
+  background:#020617;
+  border-radius:14px;
+  padding:12px;
+  margin-top:10px;
 }
 
-.send {
-  background: #22c55e;
-  color: #000;
-  font-weight: bold;
+.client-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
 }
 
-.renew {
-  background: #3b82f6;
-  color: #fff;
+.client small{
+  display:block;
+  font-size:12px;
 }
 
-.form {
-  background: linear-gradient(180deg, #0f172a, #020617);
-  padding: 20px;
-  border-radius: 16px;
+.send{
+  width:auto;
+  padding:8px 14px;
+  font-size:13px;
+  background:var(--accent);
+  color:#022c22;
+  border-radius:10px;
 }
 
-.form h2 {
-  margin-top: 0;
+.renew{
+  margin-top:6px;
 }
 
-.form input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 10px;
-}
+.hidden{display:none}
 
-.form button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  background: #22c55e;
-  font-weight: bold;
-  cursor: pointer;
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:12px;
 }
 </style>
 </head>
 
 <body>
+<div class="container">
 
-<h1>📅 Renovaciones</h1>
-
-<div class="tabs">
-  <button id="tabToday" class="active">Renovaciones</button>
-  <button id="tabAll">Todos</button>
+<!-- HEADER -->
+<div class="card">
+  <h1>📅 Panel de Clientes</h1>
+  <small id="fechaHoy"></small>
 </div>
 
-<div class="section">
-  <h3>Renovaciones de Hoy</h3>
-  <div id="todayList"></div>
+<!-- TABS -->
+<div class="card tabs">
+  <button id="btnRenovaciones" class="active" onclick="mostrar('renovaciones')">Renovaciones</button>
+  <button id="btnTodos" onclick="mostrar('todos')">Todos</button>
 </div>
 
-<div class="section">
-  <h3>Todos los clientes</h3>
-  <div id="allList" style="display:none;"></div>
+<!-- RENOVACIONES -->
+<div class="card" id="vistaRenovaciones"></div>
+
+<!-- TODOS -->
+<div class="card hidden" id="vistaTodos"></div>
+
+<!-- AGREGAR -->
+<div class="card">
+  <h1>➕ Agregar cliente</h1>
+
+  <input id="nombre" placeholder="Nombre del cliente">
+  <input id="numero" placeholder="WhatsApp (569xxxxxxxx)">
+  <input id="servicio" placeholder="Servicio (Netflix, Spotify...)">
+  <input id="fecha" type="date">
+
+  <button class="primary" onclick="guardar()">Guardar cliente</button>
 </div>
 
-<div class="form">
-  <h2>➕ Agregar cliente</h2>
-  <input id="name" placeholder="Nombre del cliente">
-  <input id="phone" placeholder="WhatsApp (+569xxxxxxx)">
-  <input id="service" placeholder="Servicio (Netflix, Spotify)">
-  <input id="date" type="date">
-  <button onclick="addClient()">Guardar cliente</button>
 </div>
 
 <script>
-let clients = JSON.parse(localStorage.getItem("clients")) || [];
+let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+const hoy = new Date().toISOString().split("T")[0];
+document.getElementById("fechaHoy").innerText = hoy;
 
-const todayList = document.getElementById("todayList");
-const allList = document.getElementById("allList");
+function mostrar(vista){
+  document.getElementById("vistaRenovaciones").classList.add("hidden");
+  document.getElementById("vistaTodos").classList.add("hidden");
+  btnRenovaciones.classList.remove("active");
+  btnTodos.classList.remove("active");
 
-const tabToday = document.getElementById("tabToday");
-const tabAll = document.getElementById("tabAll");
+  if(vista==="renovaciones"){
+    vistaRenovaciones.classList.remove("hidden");
+    btnRenovaciones.classList.add("active");
+  }else{
+    vistaTodos.classList.remove("hidden");
+    btnTodos.classList.add("active");
+  }
+}
 
-tabToday.onclick = () => {
-  tabToday.classList.add("active");
-  tabAll.classList.remove("active");
-  todayList.parentElement.style.display = "block";
-  allList.parentElement.style.display = "none";
-};
+function guardar(){
+  if(!nombre.value || !numero.value || !servicio.value || !fecha.value){
+    alert("Completa todos los campos");
+    return;
+  }
 
-tabAll.onclick = () => {
-  tabAll.classList.add("active");
-  tabToday.classList.remove("active");
-  todayList.parentElement.style.display = "none";
-  allList.parentElement.style.display = "block";
-};
-
-function addClient() {
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const service = document.getElementById("service").value;
-  const date = document.getElementById("date").value;
-
-  if (!name || !phone || !service || !date) return;
-
-  clients.push({
-    name,
-    phone,
-    service,
-    date,
-    status: "pendiente"
+  clientes.push({
+    nombre:nombre.value,
+    numero:numero.value,
+    servicio:servicio.value,
+    fecha:fecha.value
   });
 
-  save();
-  render();
-  clearForm();
-}
-
-function clearForm() {
-  document.getElementById("name").value = "";
-  document.getElementById("phone").value = "";
-  document.getElementById("service").value = "";
-  document.getElementById("date").value = "";
-}
-
-function sendMsg(i) {
-  const c = clients[i];
-  const msg = `Hola ${c.name}, tu servicio ${c.service} vence hoy 📅`;
-  window.open(`https://wa.me/${c.phone.replace("+","")}?text=${encodeURIComponent(msg)}`);
-}
-
-function renew(i, months) {
-  const d = new Date(clients[i].date);
-  d.setMonth(d.getMonth() + months);
-  clients[i].date = d.toISOString().split("T")[0];
-  save();
+  localStorage.setItem("clientes",JSON.stringify(clientes));
+  nombre.value = numero.value = servicio.value = fecha.value = "";
   render();
 }
 
-function render() {
-  todayList.innerHTML = "";
-  allList.innerHTML = "";
-
-  const today = new Date().toISOString().split("T")[0];
-
-  clients.forEach((c, i) => {
-    const card = document.createElement("div");
-    card.className = "client-card";
-    card.innerHTML = `
-      <div class="client-info">
-        <strong>${c.name} ${c.service}</strong>
-        <div>📞 ${c.phone}</div>
-        <div>📅 ${c.date} — ${c.status}</div>
-      </div>
-      <div class="client-actions">
-        <button class="send" onclick="sendMsg(${i})">Enviar</button>
-        <button class="renew" onclick="renew(${i},1)">+1 mes</button>
-        <button class="renew" onclick="renew(${i},2)">+2 meses</button>
-        <button class="renew" onclick="renew(${i},3)">+3 meses</button>
-      </div>
-    `;
-
-    allList.appendChild(card.cloneNode(true));
-    if (c.date === today) todayList.appendChild(card);
-  });
+function enviar(numero,nombre){
+  const msg=`Hola ${nombre} 👋 Tu suscripción vence hoy. ¿Deseas renovar?`;
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`,"_blank");
 }
 
-function save() {
-  localStorage.setItem("clients", JSON.stringify(clients));
+function renovar(i,meses){
+  let f=new Date(clientes[i].fecha);
+  f.setMonth(f.getMonth()+meses);
+  clientes[i].fecha=f.toISOString().split("T")[0];
+  localStorage.setItem("clientes",JSON.stringify(clientes));
+  render();
+}
+
+function cardCliente(c,i){
+  return `
+  <div class="client">
+    <div class="client-header">
+      <div>
+        <strong>${c.nombre}</strong>
+        <small>${c.numero}</small>
+        <small>${c.servicio}</small>
+        <small>Vence: ${c.fecha}</small>
+      </div>
+      <button class="send" onclick="enviar('${c.numero}','${c.nombre}')">Enviar</button>
+    </div>
+    <select class="renew" onchange="renovar(${i},parseInt(this.value))">
+      <option value="">Renovar…</option>
+      <option value="1">+1 mes</option>
+      <option value="2">+2 meses</option>
+      <option value="3">+3 meses</option>
+    </select>
+  </div>`;
+}
+
+function render(){
+  vistaRenovaciones.innerHTML="";
+  vistaTodos.innerHTML="";
+
+  clientes.forEach((c,i)=>{
+    vistaTodos.innerHTML+=cardCliente(c,i);
+    if(c.fecha===hoy) vistaRenovaciones.innerHTML+=cardCliente(c,i);
+  });
+
+  if(vistaRenovaciones.innerHTML===""){
+    vistaRenovaciones.innerHTML=`<div class="empty">No hay renovaciones hoy 🎉</div>`;
+  }
 }
 
 render();
 </script>
-
 </body>
 </html>
