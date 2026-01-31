@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Renovaciones</title>
+<style>
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #0b132b, #020617);
+  color: #fff;
+  padding: 30px;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #0f172a;
+  color: #fff;
+}
+
+.tabs button.active {
+  background: #22c55e;
+  color: #000;
+  font-weight: bold;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.client-card {
+  background: linear-gradient(180deg, #0f172a, #020617);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 30px rgba(0,0,0,.5);
+}
+
+.client-info strong {
+  font-size: 16px;
+}
+
+.client-info div {
+  font-size: 14px;
+  opacity: .85;
+}
+
+.client-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.client-actions button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.send {
+  background: #22c55e;
+  color: #000;
+  font-weight: bold;
+}
+
+.renew {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.form {
+  background: linear-gradient(180deg, #0f172a, #020617);
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.form h2 {
+  margin-top: 0;
+}
+
+.form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.form button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #22c55e;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📅 Renovaciones</h1>
+
+<div class="tabs">
+  <button id="tabToday" class="active">Renovaciones</button>
+  <button id="tabAll">Todos</button>
+</div>
+
+<div class="section">
+  <h3>Renovaciones de Hoy</h3>
+  <div id="todayList"></div>
+</div>
+
+<div class="section">
+  <h3>Todos los clientes</h3>
+  <div id="allList" style="display:none;"></div>
+</div>
+
+<div class="form">
+  <h2>➕ Agregar cliente</h2>
+  <input id="name" placeholder="Nombre del cliente">
+  <input id="phone" placeholder="WhatsApp (+569xxxxxxx)">
+  <input id="service" placeholder="Servicio (Netflix, Spotify)">
+  <input id="date" type="date">
+  <button onclick="addClient()">Guardar cliente</button>
+</div>
+
+<script>
+let clients = JSON.parse(localStorage.getItem("clients")) || [];
+
+const todayList = document.getElementById("todayList");
+const allList = document.getElementById("allList");
+
+const tabToday = document.getElementById("tabToday");
+const tabAll = document.getElementById("tabAll");
+
+tabToday.onclick = () => {
+  tabToday.classList.add("active");
+  tabAll.classList.remove("active");
+  todayList.parentElement.style.display = "block";
+  allList.parentElement.style.display = "none";
+};
+
+tabAll.onclick = () => {
+  tabAll.classList.add("active");
+  tabToday.classList.remove("active");
+  todayList.parentElement.style.display = "none";
+  allList.parentElement.style.display = "block";
+};
+
+function addClient() {
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const service = document.getElementById("service").value;
+  const date = document.getElementById("date").value;
+
+  if (!name || !phone || !service || !date) return;
+
+  clients.push({
+    name,
+    phone,
+    service,
+    date,
+    status: "pendiente"
+  });
+
+  save();
+  render();
+  clearForm();
+}
+
+function clearForm() {
+  document.getElementById("name").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("service").value = "";
+  document.getElementById("date").value = "";
+}
+
+function sendMsg(i) {
+  const c = clients[i];
+  const msg = `Hola ${c.name}, tu servicio ${c.service} vence hoy 📅`;
+  window.open(`https://wa.me/${c.phone.replace("+","")}?text=${encodeURIComponent(msg)}`);
+}
+
+function renew(i, months) {
+  const d = new Date(clients[i].date);
+  d.setMonth(d.getMonth() + months);
+  clients[i].date = d.toISOString().split("T")[0];
+  save();
+  render();
+}
+
+function render() {
+  todayList.innerHTML = "";
+  allList.innerHTML = "";
+
+  const today = new Date().toISOString().split("T")[0];
+
+  clients.forEach((c, i) => {
+    const card = document.createElement("div");
+    card.className = "client-card";
+    card.innerHTML = `
+      <div class="client-info">
+        <strong>${c.name} ${c.service}</strong>
+        <div>📞 ${c.phone}</div>
+        <div>📅 ${c.date} — ${c.status}</div>
+      </div>
+      <div class="client-actions">
+        <button class="send" onclick="sendMsg(${i})">Enviar</button>
+        <button class="renew" onclick="renew(${i},1)">+1 mes</button>
+        <button class="renew" onclick="renew(${i},2)">+2 meses</button>
+        <button class="renew" onclick="renew(${i},3)">+3 meses</button>
+      </div>
+    `;
+
+    allList.appendChild(card.cloneNode(true));
+    if (c.date === today) todayList.appendChild(card);
+  });
+}
+
+function save() {
+  localStorage.setItem("clients", JSON.stringify(clients));
+}
+
+render();
+</script>
+
+</body>
+</html>
